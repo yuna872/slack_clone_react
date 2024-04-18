@@ -19,7 +19,7 @@
       "@typings/*": ["typings/*"]
     }
   },
-  "ts-node": {
+  "ts-node": { // webpack 공식문서의 typescript 가이드
     "compilerOptions": {
       "module": "commonjs",
       "moduleResolution": "Node",

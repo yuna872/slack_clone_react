@@ -1,11 +1,17 @@
 // node에서 경로 지정할 수 있게 해주는 모듈
 import path from "path";
-import webpack from "webpack";
+import webpack, { Configuration as WebpackConfiguration } from "webpack";
+import { Configuration as WebpackDevServerConfiguration } from "webpack-dev-server";
 import ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
+import ReactRefreshWebpackPlugin from "@pmmmwh/react-refresh-webpack-plugin";
+
+interface Configuration extends WebpackConfiguration {
+  devServer?: WebpackDevServerConfiguration;
+}
 
 const isDevelopment = process.env.NODE_ENV !== "production";
 
-module.exports = {
+const config: Configuration = {
   name: "webpack-practice",
   mode: isDevelopment ? "development" : "production", // 실서비스인 경우 'production',
   devtool: "eval",
@@ -48,6 +54,11 @@ module.exports = {
             "@babel/preset-typescript",
           ],
           plugins: [],
+          env: { 
+            development: {
+              plugins: [require.resolve("react-refresh/babel")], // hot reloading
+            },
+          },
         },
       },
       // css 파일을 loader들이 js 파일을 만들어줌
@@ -59,8 +70,7 @@ module.exports = {
   },
   // **plugins
   plugins: [
-    // 타입체킹을 더 빨리 하기 위한 플러그인 (typescript)
-    new ForkTsCheckerWebpackPlugin({ async: false }),
+    new ForkTsCheckerWebpackPlugin({ async: false }), // 타입체킹을 더 빨리 하기 위한 플러그인 (typescript)
     new webpack.EnvironmentPlugin({
       NODE_ENV: isDevelopment ? "development" : "production",
     }),
@@ -73,4 +83,24 @@ module.exports = {
     filename: "app.js",
   },
   // => entry에 있는 파일을 읽고, module을 적용한 후, output으로 출력한다.
+
+  devServer: {
+    historyApiFallback: true, // react router
+    port: 3090, // 요청을 수신할 포트 번호 지정
+    devMiddleware: { publicPath: "/dist/" },
+    static: { directory: path.resolve(__dirname) },
+    // proxy: {
+    //   "/api/": {
+    //     target: "http://localhost:3095",
+    //     changeOrigin: true,
+    //   },
+    // },
+  },
 };
+
+if (isDevelopment && config.plugins) {
+  config.plugins.push(new webpack.HotModuleReplacementPlugin());
+  config.plugins.push(new ReactRefreshWebpackPlugin());
+}
+
+export default config;

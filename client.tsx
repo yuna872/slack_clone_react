@@ -8,5 +8,6 @@ render(
   <BrowserRouter>
     <App />
   </BrowserRouter>,
+  // id가 root인 div 태그 안에 렌더링 하겠다라는 의미 (index.html)
   document.querySelector("#root")
 );

@@ -54,9 +54,12 @@ const config: Configuration = {
             "@babel/preset-typescript",
           ],
           plugins: [],
-          env: { 
+          env: {
             development: {
-              plugins: [require.resolve("react-refresh/babel")], // hot reloading
+              plugins: [
+                "@emotion/babel-plugin",
+                require.resolve("react-refresh/babel"), // hot reloading
+              ],
             },
           },
         },

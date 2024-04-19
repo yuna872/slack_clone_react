@@ -57,7 +57,7 @@ const config: Configuration = {
           env: {
             development: {
               plugins: [
-                "@emotion/babel-plugin",
+                ["@emotion", { sourceMap: true }],
                 require.resolve("react-refresh/babel"), // hot reloading
               ],
             },

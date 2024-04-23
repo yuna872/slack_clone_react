@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { ChangeEvent, FormEvent, useCallback, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Success,
@@ -10,22 +10,57 @@ import {
   Button,
   Header,
 } from "./styles";
+import useInput from "@hooks/useInput";
+import axios from "axios";
 
 const SignUp = () => {
-  const [email, setEmail] = useState("");
-  const [nickname, setNickname] = useState("");
-  const [password, setPassword] = useState("");
-  const [passwordCheck, setPasswordCheck] = useState("");
-
-  const onChangeEmail = useCallback(() => {}, []);
-  const onChangeNickname = useCallback(() => {}, []);
-  const onChangePassword = useCallback(() => {}, []);
-  const onChangePasswordCheck = useCallback(() => {}, []);
-  const onSubmit = useCallback(() => {}, []);
+  const [email, onChangeEmail] = useInput("");
+  const [nickname, onChangeNickname] = useInput("");
+  const [password, , setPassword] = useInput("");
+  const [passwordCheck, , setPasswordCheck] = useInput("");
 
   const [mismatchError, setMismatchError] = useState(false);
   const [signUpError, setSignUpError] = useState(false);
   const [signUpSuccess, setSignUpSuccess] = useState(false);
+
+  const onChangePassword = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setPassword(e.target.value);
+      setMismatchError(e.target.value !== passwordCheck);
+    },
+    [passwordCheck],
+  );
+
+  const onChangePasswordCheck = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setPasswordCheck(e.target.value);
+      setMismatchError(e.target.value !== password);
+    },
+    [password],
+  );
+
+  const onSubmit = useCallback(
+    (e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      if (!mismatchError && nickname) {
+        console.log("서버로 회원가입하기");
+        axios
+          .post("http://localhost:3095/api/users", {
+            email,
+            nickname,
+            password,
+          })
+          .then((res) => {
+            console.log(res);
+          })
+          .catch((err) => {
+            console.log(err);
+          })
+          .finally(() => {});
+      }
+    },
+    [email, nickname, password, passwordCheck],
+  );
 
   return (
     <div id="container">

@@ -92,12 +92,12 @@ const config: Configuration = {
     port: 3090, // 요청을 수신할 포트 번호 지정
     devMiddleware: { publicPath: "/dist/" },
     static: { directory: path.resolve(__dirname) },
-    // proxy: {
-    //   "/api/": {
-    //     target: "http://localhost:3095",
-    //     changeOrigin: true,
-    //   },
-    // },
+    proxy: {
+      '/api/': {
+        target: "http://localhost:3095",
+        changeOrigin: true,
+      },
+    },
   },
 };
 

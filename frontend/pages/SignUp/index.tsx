@@ -20,7 +20,7 @@ const SignUp = () => {
   const [passwordCheck, , setPasswordCheck] = useInput("");
 
   const [mismatchError, setMismatchError] = useState(false);
-  const [signUpError, setSignUpError] = useState(false);
+  const [signUpError, setSignUpError] = useState("");
   const [signUpSuccess, setSignUpSuccess] = useState(false);
 
   const onChangePassword = useCallback(
@@ -43,7 +43,10 @@ const SignUp = () => {
     (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       if (!mismatchError && nickname) {
-        console.log("서버로 회원가입하기");
+        // then, catch, finally 구문 안에서 setAction 하는 state들은 비동기 요청하기 전에 초기화 해주는 것이 좋음
+        setSignUpSuccess(false);
+        setSignUpError('')
+
         axios
           .post("http://localhost:3095/api/users", {
             email,
@@ -51,10 +54,10 @@ const SignUp = () => {
             password,
           })
           .then((res) => {
-            console.log(res);
+            setSignUpSuccess(true);
           })
           .catch((err) => {
-            console.log(err);
+            setSignUpError(err.response.data);
           })
           .finally(() => {});
       }
